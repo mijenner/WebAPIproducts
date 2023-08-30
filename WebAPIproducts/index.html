@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Operations</title>
+</head>
+
+<body>
+    <h1>CRUD Operations</h1>
+
+    <h2>Create</h2>
+    <form id="create-form">
+        <label for="create-name">Name:</label>
+        <input type="text" id="create-name" name="name" required>
+        <label for="inventory">Inventory:</label>
+        <input type="number" id="create-inventory" name="inventory" required>
+        <label for="create-price">Price:</label>
+        <input type="number" id="create-price" name="price" step="0.01" required>
+        <button type="submit">Create</button>
+    </form>
+
+    <h2>Read products</h2>
+    <form id="read-list-form">
+        <button id="read-list">Read items</button>
+        <button id="clear-list">Clear List</button>
+    </form>
+    <ul id="list-items">
+        <!-- Display user data here -->
+    </ul>
+
+    <h2>Read by ID</h2>
+    <form id="read-form">
+        <label for="read-id">ID:</label>
+        <input type="number" id="read-id" name="id" required>
+        <button type="submit">Read</button>
+    </form>
+    <ul id="list-single-item">
+        <!-- Display user data here -->
+    </ul>
+
+
+    <h2>Update</h2>
+    <form id="update-form">
+        <label for="update-id">ID:</label>
+        <input type="number" id="update-id" name="id" required>
+        <label for="update-name">Name:</label>
+        <input type="text" id="update-name" name="name" required>
+        <label for="update-inventory">Inventory:</label>
+        <input type="number" id="update-inventory" name="inventory" required>
+        <label for="update-price">Price:</label>
+        <input type="number" id="update-price" name="price" step="0.01" required>
+        <button type="button" id="fetch-data-button">Fetch Data</button>
+        <button type="submit">Update</button>
+    </form>
+
+    <h2>Delete</h2>
+    <form id="delete-form">
+        <label for="delete-id">ID:</label>
+        <input type="number" id="delete-id" name="id" required>
+        <button type="submit">Delete</button>
+    </form>
+
+    <script>
+        // URL: 
+        // const baseUrl = 'http://localhost:5261';
+        // CORS issue with http but not with https. 
+        // const baseUrl = 'https://localhost:7063';
+        const baseUrl = 'https://localhost:7265';
+
+        // CRUD - part C 
+        // Create item 
+        document.getElementById("create-form").addEventListener("submit", async function (event) {
+            event.preventDefault();
+            const name = document.getElementById("create-name").value;
+            const inventory = parseInt(document.getElementById("create-inventory").value);
+            const price = parseFloat(document.getElementById("create-price").value);
+            // CRUD - part C 
+            // Perform POST request: 
+            const response = await fetch(baseUrl + '/product', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, inventory, price })
+            })
+
+            // Handle the response as needed
+            console.log("Creating item:", name, inventory, price);
+
+        });
+
+        // CRUD - part R 
+        // Read Items:
+        document.getElementById("read-list").addEventListener("click", async function (event) {
+            event.preventDefault();
+
+            // Perform GET request: 
+            const response = await fetch(baseUrl + '/productlist');
+            const data = await response.json();
+
+            const listItems = document.getElementById("list-items");
+            listItems.innerHTML = '';
+
+            data.forEach(item => {
+                const listItem = document.createElement("li");
+                listItem.innerText = `${item.id} - Name: ${item.name} - Inventory: ${item.inventory}, Price: ${item.price}`;
+                listItems.appendChild(listItem);
+            });
+
+            // Update the list-items <ul> with the retrieved data
+            console.log("Reading items...");
+        });
+
+        // Front end: Clear list: 
+        const clearButton = document.getElementById("clear-list");
+        clearButton.addEventListener("click", function () {
+            const listItems = document.getElementById("list-items");
+            listItems.innerHTML = '';
+        });
+
+
+        // CRUD - part R (single item) 
+        // Read Item by ID:
+        document.getElementById("read-form").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const id = parseInt(document.getElementById("read-id").value);
+
+            // Perform GET request
+            const response = await fetch(baseUrl + `/product/${id}`);
+
+            if (response.ok) {
+                const data = await response.json();
+                const listSingleItem = document.getElementById("list-single-item");
+                listSingleItem.innerHTML = '';
+
+                const listItem = document.createElement("li");
+                listItem.innerText = `${data.id} - Name: ${data.name} - Inventory: ${data.inventory}, Price: ${data.price}`;
+                listSingleItem.appendChild(listItem);
+
+                console.log("Reading item by ID:", id);
+            } else {
+                // Clear the list when fetching a non-existent item
+                const listSingleItem = document.getElementById("list-single-item");
+                listSingleItem.innerHTML = '';
+
+                console.log("Item not found for ID:", id);
+            }
+        });
+
+
+        // CRUD - part U 
+        // Update item
+        document.getElementById("update-form").addEventListener("submit", async function (event) {
+            event.preventDefault();
+            const id = parseInt(document.getElementById("update-id").value);
+            const name = document.getElementById("update-name").value;
+            const inventory = parseInt(document.getElementById("update-inventory").value);
+            const price = parseFloat(document.getElementById("update-price").value);
+
+            console.log("Updating item:", id, name, inventory, price);
+
+            // Perform PUT request
+            try {
+                const response = await fetch(baseUrl + `/product/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id, name, inventory, price })
+                });
+
+                if (response.ok) {
+                    console.log(`Item with ID ${id} updated successfully.`);
+                } else {
+                    console.log(`Failed to update item with ID ${id}.`);
+                }
+            } catch (error) {
+                console.error("Error updating item:", error);
+            }
+        });
+
+        // Helper for Update: 
+        // Add an event listener to the "Fetch Data" button
+        const fetchDataButton = document.getElementById("fetch-data-button");
+        fetchDataButton.addEventListener("click", async function () {
+            const id = parseInt(document.getElementById("update-id").value);
+            if (!isNaN(id)) {
+                try {
+                    const response = await fetch(baseUrl + `/product/${id}`);
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        document.getElementById("update-name").value = data.name;
+                        document.getElementById("update-inventory").value = data.inventory;
+                        document.getElementById("update-price").value = data.price;
+                        console.log("Fetched data for ID:", id);
+                    } else {
+                        console.log(`Failed to fetch data for ID ${id}.`);
+                    }
+                } catch (error) {
+                    console.error("Error fetching data:", error);
+                }
+            }
+        });
+
+        // CRUD - part D 
+        // Delete item
+        document.getElementById("delete-form").addEventListener("submit", async function (event) {
+            event.preventDefault();
+            const id = parseInt(document.getElementById("delete-id").value);
+
+            if (!isNaN(id)) {
+                try {
+                    const response = await fetch(baseUrl + `/product/${id}`);
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        const confirmationMessage = `Are you sure you want to delete:\n\n` +
+                            `ID: ${data.id}\nName: ${data.name}\nInventory: ${data.inventory}\nPrice: ${data.price}`;
+                        const userConfirmed = window.confirm(confirmationMessage);
+                        if (userConfirmed) {
+                            // Proceed with deletion
+                            deleteItemById(id);
+                        }
+                    } else {
+                        console.log(`Failed to fetch data for ID ${id}.`);
+                    }
+                } catch (error) {
+                    console.error("Error fetching data:", error);
+                }
+            }
+        });
+
+        // Function to delete item by ID
+        async function deleteItemById(id) {
+            try {
+                const response = await fetch(baseUrl + `/product/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    console.log(`Item with ID ${id} deleted successfully.`);
+                } else {
+                    console.log(`Failed to delete item with ID ${id}.`);
+                }
+            } catch (error) {
+                console.error("Error deleting item:", error);
+            }
+        }
+
+    </script>
+</body>
+
+</html>
