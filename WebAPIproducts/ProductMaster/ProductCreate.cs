@@ -21,7 +21,6 @@ namespace WebAPIproducts.ProductMaster
              "VALUES (@Name, @Inventory, @Price);", product);
 
          return affectedRows > 0;
-
       }
 
    }

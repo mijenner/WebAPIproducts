@@ -17,16 +17,6 @@ namespace WebAPIproducts.ProductMaster
       {
          using var connection = new SqliteConnection(databaseConfig.Name);
 
-         // First, retrieve the existing product details
-         //var productRead = new ProductRead(databaseConfig);
-         //var existingProduct = await productRead.ReadById(product.Id);
-         //if (existingProduct == null)
-         //{
-         //   // throw new Exception($"Product with Id {product.Id} not found.");
-         //   Console.WriteLine("Product with Id " + product.Id + " not found.");
-         //   return;
-         //}
-
          int affectedRows = await connection.ExecuteAsync("UPDATE Products SET Name = @Name, Inventory = @Inventory, Price = @Price WHERE Id = @Id;", product);
 
          return affectedRows > 0; 

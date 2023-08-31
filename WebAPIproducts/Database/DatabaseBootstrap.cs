@@ -21,10 +21,6 @@ namespace WebAPIproducts.Database
          if (!string.IsNullOrEmpty(tableName) && tableName == "Products")
             return;
 
-         // connection.Execute("Create Table Product (" +
-         //    "Name VARCHAR(100) NOT NULL," +
-         //    "Description VARCHAR(1000) NULL);");
-
          connection.Execute("CREATE TABLE Products (" +
              "Id INTEGER," +
              "Name TEXT," +
