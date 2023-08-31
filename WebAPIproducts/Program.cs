@@ -61,51 +61,6 @@ namespace WebAPIproducts
 
          app.UseAuthorization();
 
-         // CRUD part R - single 
-         app.MapGet("/product/{id}", async (int id) =>
-         {
-            var product = await dbRead.ReadById(id);
-
-            if (product != null)
-            {
-               return Results.Ok(product); // Return a 200 OK response with the product
-            }
-            else
-            {
-               return Results.NotFound(); // Return a 404 Not Found response
-            }
-         }).WithName("GetProductById").WithOpenApi();
-
-         // CRUD part R - multiple 
-         app.MapGet("/productlist", async () =>
-            {
-               var products = await dbRead.Read();
-
-               if (products != null && products.Any())
-               {
-                  return Results.Ok(products);  // Return status code 200 
-               }
-               else
-               {
-                  return Results.NoContent(); // Return status code 204 
-               }
-            }).WithName("GetProductList").WithOpenApi();
-
-         // CRUD - part U  
-         app.MapPut("/product/{id}", async (int id, Product updatedProduct) =>
-               {
-                  updatedProduct.Id = id;
-                  bool success = await dbUpdate.Update(updatedProduct);
-                  if (success)
-                  {
-                     return Results.Ok(); // Successful update
-                  }
-                  else
-                  {
-                     return Results.NotFound(); // Item not found
-                  }
-               }).WithName("UpdateProduct").WithOpenApi();
-
          // CRUD - part C 
          app.MapPost("/product", async (Product newProduct) =>
          {
@@ -121,6 +76,51 @@ namespace WebAPIproducts
          })
          .WithName("CreateProduct")
          .WithOpenApi();
+
+         // CRUD part R - multiple 
+         app.MapGet("/productlist", async () =>
+         {
+            var products = await dbRead.Read();
+
+            if (products != null && products.Any())
+            {
+               return Results.Ok(products);  // Return status code 200 
+            }
+            else
+            {
+               return Results.NoContent(); // Return status code 204 
+            }
+         }).WithName("GetProductList").WithOpenApi();
+
+         // CRUD part R - single 
+         app.MapGet("/product/{id}", async (int id) =>
+         {
+            var product = await dbRead.ReadById(id);
+
+            if (product != null)
+            {
+               return Results.Ok(product); // Return a 200 OK response with the product
+            }
+            else
+            {
+               return Results.NotFound(); // Return a 404 Not Found response
+            }
+         }).WithName("GetProductById").WithOpenApi();
+
+         // CRUD - part U  
+         app.MapPut("/product/{id}", async (int id, Product updatedProduct) =>
+               {
+                  updatedProduct.Id = id;
+                  bool success = await dbUpdate.Update(updatedProduct);
+                  if (success)
+                  {
+                     return Results.Ok(); // Successful update
+                  }
+                  else
+                  {
+                     return Results.NotFound(); // Item not found
+                  }
+               }).WithName("UpdateProduct").WithOpenApi();
 
          // CRUD - part D 
          app.MapDelete("/product/{id}", async (int id) =>
