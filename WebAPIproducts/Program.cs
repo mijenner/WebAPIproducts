@@ -56,6 +56,9 @@ namespace WebAPIproducts
             options => options.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod()
          );
 
+
+         app.UseStaticFiles();
+
          app.UseAuthorization();
 
          // CRUD part R - single 
@@ -133,30 +136,33 @@ namespace WebAPIproducts
             }
          }).WithName("DeleteProduct").WithOpenApi();
 
-         IConfiguration configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("Properties/launchSettings.json")
-            .Build();
+         Console.WriteLine("");
+         Console.WriteLine("Use launch profile 'httpsswagger' to test with swagger");
+         Console.WriteLine("Use launch profile 'https' to test with index.html");
+         Console.WriteLine("");
 
-         var profiles = configuration.GetSection("profiles");
-         var projectNameProfile = profiles.GetSection("https");
-         var applicationUrl = projectNameProfile["applicationUrl"];
-         if (applicationUrl != null)
-         {
-            var temp = applicationUrl.Split(new char[] { ';' }, StringSplitOptions.None);
-            if (temp[0] != null)
-            {
-               applicationUrl = temp[0]; 
-            }
-         }
+   //      IConfiguration configuration = new ConfigurationBuilder()
+   //.SetBasePath(Directory.GetCurrentDirectory())
+   //.AddJsonFile("Properties/launchSettings.json")
+   //.Build();
 
-         Console.WriteLine("");
-         Console.WriteLine("Open index.html file in Visual Studio and search for variable baseUrl");
-         Console.WriteLine("Adjust it so that it matches URL below, i.e.");
-         Console.WriteLine($"const baseUrl = '{applicationUrl}'");
-         Console.WriteLine("");
-         Console.WriteLine("Next, open index.html with web-browser and test it");
-         Console.WriteLine("");
+   //      var profiles = configuration.GetSection("profiles");
+   //      var projectNameProfile = profiles.GetSection("https");
+   //      var applicationUrl = projectNameProfile["applicationUrl"];
+   //      if (applicationUrl != null)
+   //      {
+   //         var temp = applicationUrl.Split(new char[] { ';' }, StringSplitOptions.None);
+   //         if (temp[0] != null)
+   //         {
+   //            applicationUrl = temp[0];
+   //         }
+   //      }
+         //Console.WriteLine("Open index.html file in Visual Studio and search for variable baseUrl");
+         //Console.WriteLine("Adjust it so that it matches URL below, i.e.");
+         //Console.WriteLine($"const baseUrl = '{applicationUrl}'");
+         //Console.WriteLine("");
+         //Console.WriteLine("Next, open index.html with web-browser and test it");
+         //Console.WriteLine("");
 
          app.Run();
 
